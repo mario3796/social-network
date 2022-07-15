@@ -1,0 +1,17 @@
+.Comment {
+    background: #cdd4e2;
+    border: 1px solid #6c7ca0;
+    padding: 10px 20px;
+    margin: 10px auto;
+    border-radius: 5px;
+    width: 50%;
+    text-align: left;
+}
+
+.Comment img {
+    border-radius: 50%;
+    width: 30px;
+    border: 1px solid royalblue;
+    margin-right: 5px;
+    margin-top: 5px;
+}

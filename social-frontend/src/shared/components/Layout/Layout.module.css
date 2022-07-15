@@ -1,0 +1,9 @@
+.Layout {
+    margin: 0;
+    padding: 0;
+}
+
+.Layout main{
+    text-align: center;
+    margin: 50px auto;
+}

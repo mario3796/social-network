@@ -1,0 +1,27 @@
+.Card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 70%;
+    border-radius: 5px;
+    border: 5px double royalblue;
+    display: flex;
+    margin: auto;
+    background-color: #a9b8db;
+}
+  /* #234aa5 */
+  
+.Card img {
+    border-radius: 5px 5px 0 0;
+    margin: 5px;
+    border: 5px double royalblue;
+    background-color: #ddd;
+    width: 25%;
+    border-radius: 50%;
+    background-color: #a9b8db
+}
+  
+.Container {
+    padding: 16px;
+    margin: 10px auto;
+    width: 75%;
+}

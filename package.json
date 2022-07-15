@@ -1,0 +1,19 @@
+{
+  "name": "social-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "backend:install": "cd social-backend && npm install",
+    "backend:start": "cd social-backend && npm run start",
+    "backend:build": "cd social-backend && npm run build",
+    "backend:watch": "cd social-backend && npm run watch",
+    "frontend:install": "cd social-frontend && npm install",
+    "frontend:start": "cd social-frontend && npm run start",
+    "frontend:build": "cd social-frontend && npm run build",
+    "frontend:serve": "cd social-frontend && npm run serve"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,20 @@
+.UserList table {
+    margin: auto;
+    width: 90%;
+}
+
+.UserList td, .UserList th {
+    border: 1px solid royalblue;
+    padding: 8px;
+}
+
+.UserList td {
+    color: #234aa5;
+}
+
+.UserList th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: royalblue;
+    color: #fff;
+}

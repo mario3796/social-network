@@ -1,0 +1,13 @@
+node_modules
+
+uploads
+
+.env*
+
+dist
+
+.prettierrc
+
+firebase*
+
+build

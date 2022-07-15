@@ -1,0 +1,9 @@
+.Empty {
+    background: #cdd4e2;
+    border: 1px solid royalblue;
+    padding: 10px;
+    margin: auto;
+    border-radius: 5px;
+    width: 50%;
+    color: royalblue;
+}

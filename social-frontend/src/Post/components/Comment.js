@@ -33,7 +33,7 @@ const Comment = (props) => {
     <div className={classes.Comment}>
       <h1>
         <img
-          src={process.env.REACT_APP_BACKEND_URL + props.comment.user?.image}
+          src={props.comment.user?.image}
           alt={props.comment.user._id}
         />
         {props.comment.user.firstName + ' ' + props.comment.user.lastName}

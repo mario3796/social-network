@@ -58,7 +58,7 @@ const UserList = (props) => {
           {user.image ? (
             <img
               style={{ width: '50px' }}
-              src={process.env.REACT_APP_BACKEND_URL + user.image}
+              src={user.image}
               alt=""
             />
           ) : (

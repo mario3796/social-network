@@ -38,8 +38,9 @@ const UpdateProfile = (props) => {
           method: 'POST',
           headers: {
             Authorization: localStorage.getItem('token'),
+            'Content-Type': 'application/json'
           },
-          body: formData,
+          body: JSON.stringify(user),
         }
       );
       const data = await response.json();
@@ -109,12 +110,12 @@ const UpdateProfile = (props) => {
         value={user.gender}
         onChange={(event) => setUser({ ...user, gender: event.target.value })}
       />
-      <Input
+      {/* <Input
         name="image"
         type="file"
         accept=".png, .jpg, .jpeg"
         onChange={(event) => setUser({ ...user, image: event.target.files[0] })}
-      />
+      /> */}
       <Input
         name="password"
         type="password"
@@ -126,6 +127,13 @@ const UpdateProfile = (props) => {
         onChange={(event) =>
           setUser({ ...user, confirmPassword: event.target.value })
         }
+      />
+      <Input
+        name="imageURL"
+        type="text"
+        defaultValue={user.image}
+        value={user.image}
+        onChange={(event) => setUser({ ...user, image: event.target.value })}
       />
       <Button type="submit">Submit</Button>
     </Form>

@@ -58,7 +58,7 @@ const FriendRequests = (props) => {
   requests = requests?.map((request) => {
     return (
       <Card
-        image={process.env.REACT_APP_BACKEND_URL + request.image}
+        image={request.image}
         key={request._id}
       >
         <h2>Email: {request.email}</h2>

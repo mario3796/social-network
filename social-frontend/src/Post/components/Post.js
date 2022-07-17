@@ -39,7 +39,7 @@ const Post = (props) => {
     <div className={classes.Post}>
       <h1>
         <img
-          src={process.env.REACT_APP_BACKEND_URL + props.post.user.image}
+          src={props.post.user.image}
           alt=""
         />
         {props.post.user.firstName + ' ' + props.post.user.lastName}

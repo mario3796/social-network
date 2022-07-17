@@ -63,7 +63,7 @@ const Friends = (props) => {
         margin: '10px 100px 10px 100px',
         display: 'inline-block',
       }}
-      image={process.env.REACT_APP_BACKEND_URL + friend.image}
+      image={friend.image}
       key={friend._id}
     >
       <h1>{friend.firstName + ' ' + friend.lastName}</h1>

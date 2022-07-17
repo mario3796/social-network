@@ -43,7 +43,7 @@ const SearchList = (props) => {
       {filteredUsers.map((user) => (
         <Link to={`/profile/${user._id}`} className={classes.link}>
           <img
-            src={process.env.REACT_APP_BACKEND_URL + user.image}
+            src={user.image}
             alt={user.image}
           />
           <div className={classes.container}>

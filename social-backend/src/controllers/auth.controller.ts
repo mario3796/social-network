@@ -72,11 +72,11 @@ const login = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const update = (req: Request, res: Response, next: NextFunction) => {
-  const { email, password, firstName, lastName, gender } = req.body;
-  const image = req.file;
+  const { email, password, firstName, lastName, gender, image } = req.body;
+  // const image = req.file;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    image && deleteImage(image.path);
+    // image && deleteImage(image.path);
     throw new HttpError(errors.array()[0].msg, 422);
   }
   if (!image) throw new HttpError('please pick a file of type image', 401);
@@ -90,7 +90,7 @@ const update = (req: Request, res: Response, next: NextFunction) => {
         user.lastName = lastName || user.lastName;
         user.password = hashedPassword || user.password;
         user.gender = gender || user.gender;
-        user.image = image!.path || user.image;
+        user.image = image || user.image;
         return user.save();
       });
     })

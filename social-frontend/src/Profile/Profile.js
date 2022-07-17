@@ -100,7 +100,7 @@ const Profile = (props) => {
         <Fragment>
           <div className={classes.Card}>
             <img
-              src={process.env.REACT_APP_BACKEND_URL + profile.user.image}
+              src={profile.user.image}
               alt={profile.user._id}
             />
             <div className={classes.Container}>

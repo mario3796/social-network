@@ -88,6 +88,15 @@ router.post(
       }
       return true;
     }),
+    check('image').isURL().withMessage('please enter a valid URL')
+    .custom((value: string) => {
+      if (value.includes('.png') ||
+          value.includes('.jpg') ||
+          value.includes('.jpeg')
+          ) {
+        return true
+      } else throw new Error('please pick a url of type image')
+    })
   ],
   authController.update
 );

@@ -44,7 +44,7 @@ const SignupList = (props) => {
   requests = requests?.map((request) => {
     return (
       <Card
-        image={process.env.REACT_APP_BACKEND_URL + request.user.image}
+        image={request.user.image}
         key={request._id}
       >
         <h2>Email: {request.user.email}</h2>

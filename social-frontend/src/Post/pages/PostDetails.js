@@ -76,6 +76,7 @@ const PostDetails = (props) => {
           body: JSON.stringify({
             post: params.id,
             content,
+            user: localStorage.getItem('userId')
           }),
         }
       );

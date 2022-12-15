@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/app.js",
     "build": "npx tsc",
+    "start": "node dist/app.js",
     "watch": "tsc-watch --esModuleInterop src/app.ts --outDir ./dist --onSuccess \"node ./dist/app.js\"",
     "prettier": "prettier --config .prettierrc \"src/**/*.ts\" --write"
   },

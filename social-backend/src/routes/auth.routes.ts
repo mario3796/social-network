@@ -38,7 +38,7 @@ router.post(
       .withMessage('please enter a valid name'),
     check('lastName')
       .notEmpty()
-      .withMessage('please fill the first name field')
+      .withMessage('please fill the last name field')
       .isAlpha()
       .withMessage('please enter a valid name'),
     check('userType').notEmpty().withMessage('please select a user type'),

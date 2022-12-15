@@ -77,7 +77,7 @@ const addComment = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const updateComment = (req: Request, res: Response, next: NextFunction) => {
-  const { post, content } = req.body;
+  const { post, content, user } = req.body;
   const commentId = req.params.commentId;
   Post.findById(post)
     .then(post => {
@@ -86,7 +86,7 @@ const updateComment = (req: Request, res: Response, next: NextFunction) => {
       );
       post!.comments[commentIndex] = {
         _id: commentId,
-        user: post!.user,
+        user,
         content,
       };
       return post?.save();

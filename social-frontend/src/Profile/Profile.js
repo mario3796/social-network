@@ -1,5 +1,6 @@
 import { Fragment, useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useHttpClient } from '../shared/hooks/http-hook';
 
 import Button from '../shared/components/FormElements/Button';
 import LoadingSpinner from '../shared/components/LoadingSpinner/LoadingSpinner';
@@ -12,34 +13,25 @@ const Profile = (props) => {
     user: null,
     posts: [],
   });
-  const [isLoading, setIsLoading] = useState(false);
-
+  const { isLoading, sendRequest } = useHttpClient();
   const params = useParams();
 
   let otherProfile = localStorage.getItem('userId') !== params.id;
 
   const getProfile = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + 'profile/' + params.id,
-        {
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
-        }
-      );
-      const data = await response.json();
-      setProfile({
-        user: data.user,
-        posts: data.posts,
-      });
-      setIsLoading(false);
-    } catch (err) {
-      console.log(err);
-      setIsLoading(false);
-    }
-  }, [params.id]);
+    const data = await sendRequest(
+      process.env.REACT_APP_BACKEND_URL + 'profile/' + params.id,
+      'GET',
+      null,
+      {
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    setProfile({
+      user: data.user,
+      posts: data.posts,
+    });
+  }, [params.id, sendRequest]);
 
   const handleRequest = async (add) => {
     let url = process.env.REACT_APP_BACKEND_URL + 'requests';
@@ -48,43 +40,34 @@ const Profile = (props) => {
         process.env.REACT_APP_BACKEND_URL +
         'requests/' +
         localStorage.getItem('userId');
-    try {
-      const response = await fetch(url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: localStorage.getItem('token'),
-        },
-        body: JSON.stringify({
-          sender: localStorage.getItem('userId'),
-          requested: profile.user._id,
-        }),
-      });
-      const data = await response.json();
-      console.log(data);
-      await getProfile();
-    } catch (err) {
-      console.log(err);
-    }
+    await sendRequest(
+      url,
+      'PUT',
+      JSON.stringify({
+        sender: localStorage.getItem('userId'),
+        requested: profile.user._id,
+      }),
+      {
+        'Content-Type': 'application/json',
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    await getProfile();
   };
 
   const deleteFriend = async (friendId) => {
-    const response = await fetch(
+    await sendRequest(
       process.env.REACT_APP_BACKEND_URL + 'friends',
+      'PUT',
+      JSON.stringify({
+        userId: localStorage.getItem('userId'),
+        friendId,
+      }),
       {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: localStorage.getItem('token'),
-        },
-        body: JSON.stringify({
-          userId: localStorage.getItem('userId'),
-          friendId,
-        }),
+        'Content-Type': 'application/json',
+        Authorization: localStorage.getItem('token'),
       }
     );
-    const data = await response.json();
-    console.log(data);
     await getProfile();
   };
 
@@ -155,7 +138,7 @@ const Profile = (props) => {
               </Button>
             </div>
           </div>
-          <Home otherProfile={otherProfile} posts={profile.posts} />
+          <Home getProfile={getProfile} otherProfile={otherProfile} posts={profile.posts} />
         </Fragment>
       ) : (
         <Empty>Profile not Found!</Empty>

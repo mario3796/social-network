@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useHttpClient } from '../shared/hooks/http-hook';
 
 import Card from '../shared/components/Card/Card';
 import Empty from '../shared/components/Empty/Empty';
@@ -8,51 +9,38 @@ import LoadingSpinner from '../shared/components/LoadingSpinner/LoadingSpinner';
 
 const Friends = (props) => {
   let [friends, setFriends] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, sendRequest } = useHttpClient();
   const params = useParams();
 
   const getFriends = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + 'friends?userId=' + params.id,
-        {
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
-        }
-      );
-      const data = await response.json();
-      setFriends(data.friends);
-      console.log(data);
-      setIsLoading(false);
-    } catch (err) {
-      console.log(err);
-      setIsLoading(false);
-    }
-  }, [params]);
+    const data = await sendRequest(
+      process.env.REACT_APP_BACKEND_URL + 'friends?userId=' + params.id,
+      'GET',
+      null,
+      {
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    setFriends(data.friends);
+  }, [params.id, sendRequest]);
 
   useEffect(() => {
     getFriends();
   }, [getFriends]);
 
   const deleteFriend = async (friendId) => {
-    const response = await fetch(
+    await sendRequest(
       process.env.REACT_APP_BACKEND_URL + 'friends',
+      'PUT',
+      JSON.stringify({
+        userId: localStorage.getItem('userId'),
+        friendId,
+      }),
       {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: localStorage.getItem('token'),
-        },
-        body: JSON.stringify({
-          userId: localStorage.getItem('userId'),
-          friendId,
-        }),
+        'Content-Type': 'application/json',
+        Authorization: localStorage.getItem('token'),
       }
     );
-    const data = await response.json();
-    console.log(data);
     await getFriends();
   };
 

@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useHttpClient } from '../shared/hooks/http-hook';
 
 import Button from '../shared/components/FormElements/Button';
 import Form from '../shared/components/FormElements/Form';
@@ -18,59 +19,43 @@ const UpdateProfile = (props) => {
   });
   const history = useHistory();
   const genderSelect = ['male', 'female'];
-  const [error, setError] = useState(null);
+  const { error, sendRequest } = useHttpClient();
 
   const updateProfile = async (event) => {
     event.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append('email', user.email);
-      formData.append('firstName', user.firstName);
-      formData.append('lastName', user.lastName);
-      formData.append('gender', user.gender);
-      formData.append('password', user.password);
-      formData.append('confirmPassword', user.confirmPassword);
-      formData.append('image', user.image);
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL +
-          `update?userId=${localStorage.getItem('userId')}`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
-          body: formData,
-        }
-      );
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message);
-      console.log(data);
-      history.push('/');
-    } catch (err) {
-      setError(err.message);
-      console.log(err);
-    }
+    const formData = new FormData();
+    formData.append('email', user.email);
+    formData.append('firstName', user.firstName);
+    formData.append('lastName', user.lastName);
+    formData.append('gender', user.gender);
+    formData.append('password', user.password);
+    formData.append('confirmPassword', user.confirmPassword);
+    formData.append('image', user.image);
+    await sendRequest(
+      process.env.REACT_APP_BACKEND_URL +
+        `update?userId=${localStorage.getItem('userId')}`,
+      'POST',
+      formData,
+      {
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    history.push('/');
   };
 
   const getProfile = useCallback(async () => {
-    try {
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL +
-          'profile/' +
-          localStorage.getItem('userId'),
-        {
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      setUser({ ...data.user, password: '', confirmPassword: '' });
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+    const data = await sendRequest(
+      process.env.REACT_APP_BACKEND_URL +
+        'profile/' +
+        localStorage.getItem('userId'),
+      'GET',
+      null,
+      {
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    setUser({ ...data.user, password: '', confirmPassword: '' });
+  }, [sendRequest]);
 
   useEffect(() => {
     getProfile();

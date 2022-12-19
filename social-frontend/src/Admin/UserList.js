@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useHttpClient } from '../shared/hooks/http-hook';
 import Empty from '../shared/components/Empty/Empty';
 import Button from '../shared/components/FormElements/Button';
 
@@ -6,44 +7,36 @@ import classes from './UserList.module.css';
 
 const UserList = (props) => {
   const [users, setUsers] = useState([]);
+  const { sendRequest } = useHttpClient();
 
   const getUsers = useCallback(async () => {
     try {
-      const response = await fetch(
+      const data = await sendRequest(
         process.env.REACT_APP_BACKEND_URL +
           'admin/users?userId=' +
           localStorage.getItem('userId'),
+        'GET',
+        null,
         {
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
+          Authorization: localStorage.getItem('token'),
         }
       );
-      const data = await response.json();
-      console.log(data);
       setUsers(data.users);
     } catch (err) {
       console.log(err);
     }
-  }, []);
+  }, [sendRequest]);
 
   const deleteUser = async (userId) => {
-    try {
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + 'admin/users/' + userId,
-        {
-          method: 'DELETE',
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      await getUsers();
-    } catch (err) {
-      console.log(err);
-    }
+    await sendRequest(
+      process.env.REACT_APP_BACKEND_URL + 'admin/users/' + userId,
+      'DELETE',
+      null,
+      {
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    await getUsers();
   };
 
   useEffect(() => {

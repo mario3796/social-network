@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useHttpClient } from '../../shared/hooks/http-hook';
 
 import Post from '../components/Post';
 import Comment from '../components/Comment';
@@ -13,28 +14,24 @@ const PostDetails = (props) => {
   const params = useParams();
   const [post, setPost] = useState(null);
   const [content, setContent] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, sendRequest } = useHttpClient();
 
   const addComment = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch(
+      await sendRequest(
         process.env.REACT_APP_BACKEND_URL + 'comments',
+        'POST',
+        JSON.stringify({
+          user: localStorage.getItem('userId'),
+          post: params.id,
+          content,
+        }),
         {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: localStorage.getItem('token'),
-          },
-          body: JSON.stringify({
-            user: localStorage.getItem('userId'),
-            post: params.id,
-            content,
-          }),
+          'Content-Type': 'application/json',
+          Authorization: localStorage.getItem('token'),
         }
       );
-      const data = await response.json();
-      console.log(data);
       setContent('');
       await getPost();
     } catch (err) {
@@ -43,69 +40,45 @@ const PostDetails = (props) => {
   };
 
   const getPost = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + `posts/${params.id}`,
-        {
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      setPost(data.post);
-      setIsLoading(false);
-    } catch (err) {
-      console.log(err);
-      setIsLoading(false);
-    }
-  }, [params.id]);
+    const data = await sendRequest(
+      process.env.REACT_APP_BACKEND_URL + `posts/${params.id}`,
+      'GET',
+      null,
+      {
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    setPost(data.post);
+  }, [params.id, sendRequest]);
 
   const updateComment = async (commentId, content) => {
-    try {
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + `comments/${commentId}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: localStorage.getItem('token'),
-          },
-          body: JSON.stringify({
-            post: params.id,
-            content,
-            user: localStorage.getItem('userId')
-          }),
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      await getPost();
-    } catch (err) {
-      console.log(err);
-    }
+    await sendRequest(
+      process.env.REACT_APP_BACKEND_URL + `comments/${commentId}`,
+      'PUT',
+      JSON.stringify({
+        post: params.id,
+        content,
+        user: localStorage.getItem('userId'),
+      }),
+      {
+        'Content-Type': 'application/json',
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    await getPost();
   };
 
   const deleteComment = async (commentId) => {
-    try {
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL +
-          `comments/${commentId}?post=${params.id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      await getPost();
-    } catch (err) {
-      console.log(err);
-    }
+    await sendRequest(
+      process.env.REACT_APP_BACKEND_URL +
+        `comments/${commentId}?post=${params.id}`,
+      'DELETE',
+      null,
+      {
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    await getPost();
   };
 
   useEffect(() => {

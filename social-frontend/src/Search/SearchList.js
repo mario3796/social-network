@@ -1,28 +1,24 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useHttpClient } from '../shared/hooks/http-hook';
 import { Link } from 'react-router-dom';
 
 import classes from './SearchList.module.css';
 
 const SearchList = (props) => {
   let [users, setUsers] = useState([]);
+  const { sendRequest } = useHttpClient();
 
   const getUsers = useCallback(async () => {
-    try {
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + 'users',
-        {
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      setUsers(data.users);
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+    const data = await sendRequest(
+      process.env.REACT_APP_BACKEND_URL + 'users',
+      'GET',
+      null,
+      {
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    setUsers(data.users);
+  }, [sendRequest]);
 
   const filteredUsers = users.filter((el) => {
     if (props.input.trim() === '') {

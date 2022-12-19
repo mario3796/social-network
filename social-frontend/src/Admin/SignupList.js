@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useHttpClient } from '../shared/hooks/http-hook';
 
 import Card from '../shared/components/Card/Card';
 import Button from '../shared/components/FormElements/Button';
@@ -6,38 +7,34 @@ import Empty from '../shared/components/Empty/Empty';
 
 const SignupList = (props) => {
   let [requests, setRequests] = useState([]);
+  const { sendRequest } = useHttpClient();
 
   const getRequests = useCallback(async () => {
-    const response = await fetch(
+    const data = await sendRequest(
       process.env.REACT_APP_BACKEND_URL + 'admin/requests',
+      'GET',
+      null,
       {
-        headers: {
-          Authorization: localStorage.getItem('token'),
-        },
+        Authorization: localStorage.getItem('token'),
       }
     );
-    const data = await response.json();
-    console.log(data);
     setRequests(data.requests);
-  }, []);
+  }, [sendRequest]);
 
   const handleRequest = async (requestId, handle = 'accept') => {
     let method = 'PUT';
     if (handle === 'reject') {
       method = 'DELETE';
     }
-    const response = await fetch(
+    await sendRequest(
       process.env.REACT_APP_BACKEND_URL + `admin/requests/${requestId}`,
+      method,
+      null,
       {
-        method,
-        headers: {
-          Authorization: localStorage.getItem('token'),
-          'Content-Type': 'application/json',
-        },
+        Authorization: localStorage.getItem('token'),
+        'Content-Type': 'application/json',
       }
     );
-    const data = await response.json();
-    console.log(data);
     await getRequests();
   };
 

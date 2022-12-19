@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useHttpClient } from '../shared/hooks/http-hook';
 
 import Form from '../shared/components/FormElements/Form';
 import Input from '../shared/components/FormElements/Input';
@@ -13,95 +14,64 @@ const Home = (props) => {
     user: localStorage.getItem('userId'),
   });
   const [posts, setPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, sendRequest } = useHttpClient();
 
   const addPost = async (event) => {
     event.preventDefault();
-    try {
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + 'posts',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: localStorage.getItem('token'),
-          },
-          body: JSON.stringify(post),
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      setPost({
-        ...post,
-        title: '',
-        content: '',
-      });
-      await getPosts();
-    } catch (err) {
-      console.log(err);
-    }
+    await sendRequest(
+      process.env.REACT_APP_BACKEND_URL + 'posts',
+      'POST',
+      JSON.stringify(post),
+      {
+        'Content-Type': 'application/json',
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    setPost({
+      ...post,
+      title: '',
+      content: '',
+    });
+    
+    props.getProfile ? await props.getProfile() : await getPosts();
   };
 
   const updatePost = async (postId, postData) => {
-    try {
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + `posts/${postId}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: localStorage.getItem('token'),
-          },
-          body: JSON.stringify(postData),
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      await getPosts();
-    } catch (err) {
-      console.log(err);
-    }
+    await sendRequest(
+      process.env.REACT_APP_BACKEND_URL + `posts/${postId}`,
+      'PUT',
+      JSON.stringify(postData),
+      {
+        'Content-Type': 'application/json',
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    props.getProfile ? await props.getProfile() : await getPosts();
   };
 
   const deletePost = async (postId) => {
-    try {
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + 'posts/' + postId,
-        {
-          method: 'DELETE',
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      await getPosts();
-    } catch (err) {
-      console.log(err);
-    }
+    await sendRequest(
+      process.env.REACT_APP_BACKEND_URL + 'posts/' + postId,
+      'DELETE',
+      null,
+      {
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    props.getProfile ? await props.getProfile() : await getPosts();
   };
 
   const getPosts = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + 'posts',
-        {
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
-        }
-      );
-      const data = await response.json();
-      setPosts(data.posts);
-      console.log(data);
-      setIsLoading(false);
-    } catch (err) {
-      console.log(err);
-      setIsLoading(true);
-    }
-  }, []);
+    const data = await sendRequest(
+      process.env.REACT_APP_BACKEND_URL + 'posts',
+      'GET',
+      null,
+      {
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    setPosts(data.posts);
+  }, [sendRequest]);
 
   useEffect(() => {
     getPosts();

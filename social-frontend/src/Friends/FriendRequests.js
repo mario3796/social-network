@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useHttpClient } from '../shared/hooks/http-hook.js';
 import Card from '../shared/components/Card/Card';
 import Empty from '../shared/components/Empty/Empty';
 import Button from '../shared/components/FormElements/Button';
@@ -6,53 +7,38 @@ import LoadingSpinner from '../shared/components/LoadingSpinner/LoadingSpinner';
 
 const FriendRequests = (props) => {
   let [requests, setRequests] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, sendRequest } = useHttpClient();
 
   const getRequests = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL +
-          `requests?userId=${localStorage.getItem('userId')}`,
-        {
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      setRequests(data.requests);
-      setIsLoading(false);
-    } catch (err) {
-      setIsLoading(false);
-      console.log(err);
-    }
-  }, []);
+    const data = await sendRequest(
+      process.env.REACT_APP_BACKEND_URL +
+        `requests?userId=${localStorage.getItem('userId')}`,
+      'GET',
+      null,
+      {
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    setRequests(data.requests);
+  }, [sendRequest]);
 
   const handleRequest = async (userId, add) => {
     let method;
     add ? (method = 'POST') : (method = 'PUT');
-    try {
-      const response = await fetch(
-        process.env.REACT_APP_BACKEND_URL + 'requests/' + userId,
-        {
-          method,
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: localStorage.getItem('token'),
-          },
-          body: JSON.stringify({
-            requested: localStorage.getItem('userId'),
-          }),
-        }
-      );
-      const data = await response.json();
-      console.log(data);
-      await getRequests();
-    } catch (err) {
-      console.log(err);
-    }
+    const response = await sendRequest(
+      process.env.REACT_APP_BACKEND_URL + 'requests/' + userId,
+      method,
+      JSON.stringify({
+        requested: localStorage.getItem('userId'),
+      }),
+      {
+        'Content-Type': 'application/json',
+        Authorization: localStorage.getItem('token'),
+      }
+    );
+    const data = await response.json();
+    console.log(data);
+    await getRequests();
   };
 
   requests = requests?.map((request) => {

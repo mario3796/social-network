@@ -1,5 +1,6 @@
 import React, { Fragment, useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useHttpClient } from '../shared/hooks/http-hook';
 
 import Form from '../shared/components/FormElements/Form';
 import Input from '../shared/components/FormElements/Input';
@@ -17,11 +18,11 @@ const Auth = (props) => {
     password: '',
     confirmPassword: '',
   });
-  const [error, setError] = useState(null);
   const userTypeSelect = ['user', 'admin'];
   const genderSelect = ['male', 'female'];
   const authCtx = useContext(AuthContext);
   const history = useHistory();
+  const { sendRequest, error } = useHttpClient();
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -29,27 +30,13 @@ const Auth = (props) => {
     if (!props.isLogin) {
       url = process.env.REACT_APP_BACKEND_URL + 'signup';
     }
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(user),
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message);
-      }
-      console.log(data);
-      if (props.isLogin) {
-        authCtx.login(data);
-      }
-      history.push('/');
-    } catch (err) {
-      console.log(err);
-      setError(err.message);
+    const data = await sendRequest(url, 'POST', JSON.stringify(user), {
+      'Content-Type': 'application/json',
+    });
+    if (props.isLogin) {
+      authCtx.login(data);
     }
+    history.push('/');
   };
 
   return (

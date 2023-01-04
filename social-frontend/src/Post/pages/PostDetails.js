@@ -20,11 +20,10 @@ const PostDetails = (props) => {
     event.preventDefault();
     try {
       await sendRequest(
-        process.env.REACT_APP_BACKEND_URL + 'comments',
+        process.env.REACT_APP_BACKEND_URL + `posts/${params.id}/comments`,
         'POST',
         JSON.stringify({
           user: localStorage.getItem('userId'),
-          post: params.id,
           content,
         }),
         {
@@ -53,7 +52,7 @@ const PostDetails = (props) => {
 
   const updateComment = async (commentId, content) => {
     await sendRequest(
-      process.env.REACT_APP_BACKEND_URL + `comments/${commentId}`,
+      process.env.REACT_APP_BACKEND_URL + `posts/${params.id}/comments/${commentId}`,
       'PUT',
       JSON.stringify({
         post: params.id,
@@ -71,7 +70,7 @@ const PostDetails = (props) => {
   const deleteComment = async (commentId) => {
     await sendRequest(
       process.env.REACT_APP_BACKEND_URL +
-        `comments/${commentId}?post=${params.id}`,
+        `posts/${params.id}/comments/${commentId}`,
       'DELETE',
       null,
       {

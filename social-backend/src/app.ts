@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
+import postsRoutes from './routes/post.routes';
 import adminRoutes from './routes/admin.routes';
 
 dotenv.config();
@@ -29,6 +30,7 @@ app.use('/uploads/images', express.static(path.join('uploads', 'images')));
 
 app.use(authRoutes);
 app.use(userRoutes);
+app.use('/posts', postsRoutes)
 app.use('/admin', adminRoutes);
 
 app.use(

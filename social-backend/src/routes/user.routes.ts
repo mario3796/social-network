@@ -8,22 +8,6 @@ router.use(verifyAuthToken);
 
 router.get('/profile/:userId', userController.getProfile);
 
-router.get('/posts', userController.getPosts);
-
-router.get('/posts/:postId', userController.getPost);
-
-router.post('/posts', userController.addPost);
-
-router.put('/posts/:postId', userController.updatePost);
-
-router.delete('/posts/:postId', userController.deletePost);
-
-router.post('/comments', userController.addComment);
-
-router.put('/comments/:commentId', userController.updateComment);
-
-router.delete('/comments/:commentId', userController.deleteComment);
-
 router.get('/requests', userController.getRequests);
 
 router.put('/requests', userController.addRequest);
